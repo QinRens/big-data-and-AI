@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N gpu
+#PBS -l nodes=1:ppn=1:gpus=2
+#PBS -l walltime=24:00:00
+#PBS -j oe
+##PBS -q high
+#PBS -q gpu
+##import env and tools
+source /public/python/env.python-2.7.12-gpu-ucs4.sh
+##PBS start
+cd $PBS_O_WORKDIR
+NPROCS=`wc -l < $PBS_NODEFILE`
+python  featurengineering.py 

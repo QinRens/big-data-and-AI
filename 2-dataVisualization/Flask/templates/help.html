@@ -1,0 +1,43 @@
+{% extends "layout2.html" %} 			{% block body %}
+
+
+<section class="service-area section-gap" id="pre">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-60 col-lg-8">
+                <div class="title text-center">
+                 {% if name %}
+                    <h1 class="mb-10" style="text-align: center;">
+                            {{data}}
+                        </h1> {% else %}
+                    <h1 class="mb-10">
+                            Please Upload Data File
+                        </h1> {%endif%}
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <div class="menu-content pb-60 col-lg-8">
+                    <div class="title text-center">
+                        <h1 class="mb-10" style="text-align: center;">
+                                Settings
+                            </h1>
+                    </div>
+                </div>
+            </div>
+        <!-- Upload the file and Submit-->
+        <div class="row d-flex justify-content-center">
+            <form action="linux" enctype="multipart/form-data" method="POST">
+                <label for="file">Choose a file: </label>
+                <input name="file" id="file" type="file" />
+                <br>
+                        <div class="row d-flex justify-content-center">
+                <input type="submit" value="Submit" />
+            </div>
+            </form>
+        </div>
+    </div>
+</section>
+	    	{% endblock %}

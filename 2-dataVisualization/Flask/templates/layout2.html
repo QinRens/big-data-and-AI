@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+		<title>Google Nexus Website Menu</title>
+		<meta name="description" content="A sidebar menu as seen on the Google Nexus 7 website" />
+		<meta name="keywords" content="google nexus 7 menu, css transitions, sidebar, side menu, slide out menu" />
+		<meta name="author" content="Codrops" />
+		<link rel="shortcut icon" href="../favicon.ico">
+		<link rel="stylesheet" type="text/css" href="static/css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="static/css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="static/css/component.css" />
+		<link href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700" rel="stylesheet">
+                                    <!--
+			CSS
+			============================================= -->
+                                    <link href="static/css/linearicons.css" rel="stylesheet">
+                                        <link href="static/css/font-awesome.min.css" rel="stylesheet">
+                                            <link href="static/css/jquery.DonutWidget.min.css" rel="stylesheet">
+                                                <link href="static/css/bootstrap.css" rel="stylesheet">
+                                                    <link href="static/css/owl.carousel.css" rel="stylesheet">
+                                                        <link href="static/css/main.css" rel="stylesheet">
+                                                            <link href="static/css/normalize.css" rel="stylesheet" type="text/css"/>
+                                                            <link href="static/css/demo.css" rel="stylesheet" type="text/css"/>
+                                                            <link href="static/css/component.css" rel="stylesheet" type="text/css"/>
+                                                            <script src="static/js/modernizr.custom.js">
+                                                            </script>
+                                                        </link>
+                                                    </link>
+                                                </link>
+                                            </link>
+                                        </link>
+                                    </link>
+                                </link>
+                            </meta>
+                        </meta>
+                    </meta>
+                </meta>
+            </link>
+		<script src="static/js/modernizr.custom.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<ul id="gn-menu" class="gn-menu-main">
+				<li class="gn-trigger">
+					<a class="gn-icon gn-icon-menu"><span>Menu</span></a>
+					<nav class="gn-menu-wrapper">
+						<div class="gn-scroller">
+							<ul class="gn-menu">
+								<li class="gn-search-item">
+									<input placeholder="Search" type="search" class="gn-search">
+									<a class="gn-icon gn-icon-search"><span>Search</span></a>
+								</li>
+								<li>
+									<a class="gn-icon gn-icon-download">Downloads</a>
+									<ul class="gn-submenu">
+										<li><a class="gn-icon gn-icon-illustrator">Vector Illustrations</a></li>
+										<li><a class="gn-icon gn-icon-photoshop">Photoshop files</a></li>
+									</ul>
+								</li>
+								<li><a class="gn-icon gn-icon-cog">Settings</a></li>
+								<li><a class="gn-icon gn-icon-help">Help</a></li>
+								<li>
+									<a class="gn-icon gn-icon-archive">Archives</a>
+									<ul class="gn-submenu">
+										<li><a class="gn-icon gn-icon-article">Articles</a></li>
+										<li><a class="gn-icon gn-icon-pictures">Images</a></li>
+										<li><a class="gn-icon gn-icon-videos">Videos</a></li>
+									</ul>
+								</li>
+							</ul>
+						</div><!-- /gn-scroller -->
+					</nav>
+				</li>
+				<li>
+				{% if request.path == "/dataPro" %}
+
+				<li><a class="codrops-icon codrops-icon-prev" href="into"><span>Previous</span></a></li>
+				<li><a>Step 1: Data Processing</a></li>
+				<li><a class="codrops-icon codrops-icon-drop" ><span>Not Finished!!!</span></a></li>
+				{%endif%}
+				{% if request.path == "/analyzeData" %}
+
+				<li><a class="codrops-icon codrops-icon-prev" href="dataPro"><span>Previous</span></a></li>
+				<li><a>Step 1: Data Analysis</a></li>
+				<li><a class="codrops-icon codrops-icon-drop" href="featureEng"><span>Next Step</span></a></li>
+				{%endif%}
+				{% if request.path == "/featureEng" %}
+
+				<li><a class="codrops-icon codrops-icon-prev" href="dataPro"><span>Previous</span></a></li>
+				<li><a>Step 2: Feature Engineering</a></li>
+				<li><a class="codrops-icon codrops-icon-drop"><span>Not Finished!</span></a></li>
+				{%endif%}
+				{% if request.path == "/ml" %}
+
+				<li><a class="codrops-icon codrops-icon-prev" href="featureEng"><span>Previous</span></a></li>
+				<li><a>Step 3: Machin Learning</a></li>
+				<li><a class="codrops-icon codrops-icon-drop"><span>Not Finished!</span></a></li>
+				{%endif%}
+			</ul>
+		</div><!-- /container -->
+
+		{% block body %}
+	    {% endblock %}
+		<script src="static/js/classie.js"></script>
+		<script src="static/js/gnmenu.js"></script>
+		<script>
+			new gnMenu( document.getElementById( 'gn-menu' ));
+		</script>
+		<script src="https://cdn.zingchart.com/zingchart.min.js">
+        </script>
+        <script>
+            zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+			ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9","ee6b7db5b51705a13dc2339db3edaf6d"];
+        </script>
+        <script src="static/js/vendor/jquery-2.2.4.min.js">
+        </script>
+        <script crossorigin="anonymous" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js">
+        </script>
+        <script src="static/js/vendor/bootstrap.min.js">
+        </script>
+        <script src="static/js/jquery.ajaxchimp.min.js">
+        </script>
+        <script src="static/js/owl.carousel.min.js">
+        </script>
+        <script src="https://img.hcharts.cn/highcharts/highcharts.js">
+        </script>
+        <script src="https://img.hcharts.cn/highcharts/highcharts-more.js">
+        </script>
+        <script src="https://img.hcharts.cn/highcharts/modules/exporting.js">
+        </script>
+        <script src="https://img.hcharts.cn/highcharts/modules/solid-gauge.js">
+        </script>
+        <script src="https://img.hcharts.cn/highcharts/themes/dark-unica.js">
+        </script>
+        <script src="static/js/chartscript.js">
+        </script>
+        <script src="http://d3js.org/d3.v3.min.js">
+        </script>
+        <script src="static/js/jquery.sticky.js">
+        </script>
+        <script src="static/js/jquery.magnific-popup.min.js">
+        </script>
+        <script src="static/js/main.js">
+        </script>
+	</body>
+</html>

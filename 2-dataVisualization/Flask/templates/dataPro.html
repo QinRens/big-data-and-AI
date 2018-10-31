@@ -1,0 +1,746 @@
+{% extends "layout2.html" %} {% block body %}
+<!-- Start service Area -->
+
+
+<section class="service-area section-gap" id="pre">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-60 col-lg-8">
+                <div class="title text-center">
+                 {% if name %}
+                    <h1 class="mb-10" style="text-align: center;">
+                            {{name}} Data Processing
+                        </h1> {% else %}
+                    <h1 class="mb-10">
+                            Please Upload Feature Data File
+                        </h1> {%endif%}
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <div class="menu-content pb-60 col-lg-8">
+                    <div class="title text-center">
+                        <h1 class="mb-10" style="text-align: center;">
+                                Settings
+                            </h1>
+                    </div>
+                </div>
+            </div>
+        <!-- Upload the file and Submit-->
+        <div class="row d-flex justify-content-center">
+            <form action="analyzeData" enctype="multipart/form-data" method="POST">
+                <label for="file">Choose a file: </label>
+                <input name="file" id="file" type="file" />
+                <br>
+                <label for="threshold">Set a Threshold for Missing Rate:(%) </label>
+                <input  name="threshold" id="threshold" type="text">
+                <br>
+                <label for="fixing">Set a Method for Fixing the Missing Value:(%) </label>
+                <select name="fixing" id="fixing">
+                    <option>-Please Choose-</option>
+                    <option>Linear</option>
+                </select>
+                        <div class="row d-flex justify-content-center">
+                <input type="submit" value="Submit" />
+            </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<hr/>
+{% if data%}
+<section>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <script src="https://cdn.zingchart.com/zingchart.min.js">
+            </script>
+            <script>
+            zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+            ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "ee6b7db5b51705a13dc2339db3edaf6d"];
+            </script>
+            <script src="https://cdn.zingchart.com/modules/zingchart-zoom-buttons.min.js">
+            </script>
+            <style>
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            input {
+                font-family: 'Lucida Sans Unicode';
+            }
+
+            #myChart {
+                height: 100%;
+                width: 100%;
+                min-height: 150px;
+            }
+
+            .zc-ref {
+                display: none;
+            }
+            </style>
+            <div id="myChart">
+            </div>
+            <script>
+            var rownameJS = {{ data.featureName | tojson }}
+            var myChart = {
+                "type": "bar",
+                "title": {
+                    "text": "Missing Rate of Different Feature"
+                },
+                "plot": {
+                    "value-box": {
+                        "text": "%v"
+                    },
+                    "tooltip": {
+                        "rules": [{ //Rule 1
+                            "rule": "%v < "+String({{data.threshold}}) ,
+                            "text": "%data-sub-text is<br>less than"+String({{data.threshold}}),
+                            "background-color": "#666699"
+                        }, { //Rule 2
+                            "rule": "%v >= "+String({{data.threshold}}),
+                            "text": "%data-sub-text is<br>in the red.",
+                            "font-weight": "bold",
+                            "background-color": "#ff9999"
+                        }],
+                    },
+                },
+                "legend": {
+                    "toggle-action": "hide",
+                    "header": {
+                        "text": "Legend Header"
+                    },
+                    "item": {
+                        "cursor": "pointer"
+                    },
+                    "draggable": true,
+                    "drag-handler": "icon"
+                },
+                "scale-x": {
+                    "values": rownameJS,
+                    "items-overlap": true,
+                    "label": {
+                        "text": "Feature Name",
+                        "font-family": "Arial",
+                        "font-weight": "normal",
+                        "font-size": "10px",
+                        "font-color": "#fff",
+                        "padding-top": "30px"
+                    },
+                    "guide": {
+                        "visible": false
+                    },
+                    "item": {
+                        "font-color": "#9a9cab",
+                        "font-family": "Arial",
+                        "font-size": "10px",
+                        "font-angle": -48,
+                        "offset-x": "5px"
+                    }
+                },
+                "scale-y": {
+                    "line-color": "#53566f",
+                    "tick": {
+                        "line-color": "#53566f"
+                    },
+                    "label": {
+                        "text": "Missing Rate / %",
+                        "font-family": "Arial",
+                        "font-weight": "normal",
+                        "font-size": "10px",
+                        "font-color": "#000"
+                    },
+                    "item": {
+                        "font-color": "#9a9cab",
+                        "font-family": "Arial",
+                        "font-size": "10px",
+                        "padding": "3px"
+                    },
+                    "guide": {
+                        "visible": false
+                    },
+                    "markers": [{
+                        "type": "area",
+                        "range": [0, {{data.threshold}}],
+                        "background-color": "#666699",
+                        "alpha": 0.3
+                    }, {
+                        "type": "area",
+                        "range": [{{data.threshold}}, 100],
+                        "background-color": "#e6000e #ffdfe5",
+                        "alpha": 0.3
+                    }]
+                },
+                "series": [{
+                    "values": {{ data.missingRate }},
+                    "text": "Missing Value",
+                    "data-sub-text": rownameJS,
+                    "backgroundColor":"#6666FF #FF0066"
+                }]
+            };
+            zingchart.render({
+                id: "myChart",
+                data: myChart,
+                height: "480",
+                width: "100%"
+            });
+            </script>
+            <hr/>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <style>
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            input {
+                font-family: 'Lucida Sans Unicode';
+            }
+
+            #missingCount {
+                height: 100%;
+                width: 100%;
+                min-height: 150px;
+            }
+
+            .zc-ref {
+                display: none;
+            }
+            </style>
+            <div id="missingCount">
+            </div>
+            <script>
+            var dateNameJS = {{ data.missingDateName | tojson }}
+            var myConfig = {
+                "globals": {
+                    "font-family": "Lato",
+                    "font-weight": "100"
+                },
+                "graphset": [{
+                    "type": "ring",
+                    "height":"40%", 
+                    "width":"40%", 
+                    "x":"5%",
+                    "y":"30%",
+                    "background-color": "#fff",
+                    "tooltip": {
+                        "visible": 0
+                    },
+                    "plotarea": {
+                        "margin": "0% 0% 0% 0%"
+                    },
+                    "plot": {
+                        "slice": "90%",
+                        "size":150,
+                        "ref-angle": 0,
+                        "detach": false,
+                        "hover-state": {
+                            "visible": false
+                        },
+                        "value-box": {
+                            "visible": true,
+                            "type": "first",
+                            "connected": false,
+                            "placement": "center",
+                            "text": "<span style='font-size:60px;'>Missing</span><br>Count<br>"+String({{data.missingCount}})+"/"+String({{data.allCount}}),
+                            "rules": [{
+                                "rule": "%v > 0",
+                                "visible": true
+                            }],
+                            "font-color": "#000",
+                            "font-size": "40px"
+                        },
+                        "animation": {
+                            "delay": 0,
+                            "effect": 2,
+                            "speed": "600",
+                            "method": "0",
+                            "sequence": "1"
+                        }
+                    },
+                    "series": [{
+                            "values": [{{ data.missingCount }}],
+                            "background-color": "#6666FF #FF0066",
+                            "border-color": "#fff",
+                            "border-width": "2px",
+                            "shadow": 0,
+
+                        },
+                        {
+                            "values": [{{ data.allCount }}],
+                            "background-color": "#000",
+                            "border-color": "#fff",
+                            "border-width": "2px",
+                            "shadow": 0
+                        },
+                    ]
+                },
+
+                {
+                "type": "bar",
+                "height":"90%", 
+                "width":"60%",
+                 "x":"40%",
+                 "y":"5%",
+                "title": {
+                    "text": "Missing Feature Count in the Time Line"
+                },
+                "plot": {
+                    "value-box": {
+                        "text": "%v"
+                    },
+                    "tooltip": {
+                        "rules": [{ //Rule
+                            "rule": "%v",
+                            "text": "%data-sub-text",
+                            "background-color": "#666699"
+                          }
+                        ],
+                    },
+                },
+                "legend": {
+                    "toggle-action": "hide",
+                    "header": {
+                        "text": "Legend Header"
+                    },
+                    "item": {
+                        "cursor": "pointer"
+                    },
+                    "draggable": true,
+                    "drag-handler": "icon"
+                },
+                "scale-x": {
+                    "values": dateNameJS,
+                    "items-overlap": true,
+                    "label": {
+                        "text": "Time",
+                        "font-family": "Arial",
+                        "font-weight": "normal",
+                        "font-size": "10px",
+                        "font-color": "#fff",
+                        "padding-top": "30px"
+                    },
+                    "guide": {
+                        "visible": false
+                    },
+                    "item": {
+                        "font-color": "#9a9cab",
+                        "font-family": "Arial",
+                        "font-size": "10px",
+                        "font-angle": -48,
+                        "offset-x": "5px"
+                    }
+                },
+                "scale-y": {
+                    "line-color": "#53566f",
+                    "tick": {
+                        "line-color": "#53566f"
+                    },
+                    "label": {
+                        "text": "Missing Count",
+                        "font-family": "Arial",
+                        "font-weight": "normal",
+                        "font-size": "10px",
+                        "font-color": "#000"
+                    },
+                    "item": {
+                        "font-color": "#9a9cab",
+                        "font-family": "Arial",
+                        "font-size": "10px",
+                        "padding": "3px"
+                    },
+                    "guide": {
+                        "visible": false
+                    }
+                },
+                "series": [{
+                    "values": {{ data.missingDateCount }},
+                    "text": "Missing Value",
+                    "data-sub-text": dateNameJS,
+                    "backgroundColor":"#6666FF #FF0066"
+                }]
+            }
+            ]};
+            zingchart.render({
+                id: 'missingCount',
+                data: myConfig,
+                hideprogresslogo: true
+            });
+            </script>
+        </div>
+    </div>
+</section>
+{%endif%}
+
+<hr/>
+
+ {% if data %}
+<section class="service-area section-gap" id="after">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-60 col-lg-8">
+                <div class="title text-center">
+                    <br>
+                    <h1 class="mb-10">
+                            After Filter and Fix
+                    </h1>
+                    </br>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<hr/>
+{% if data%}
+<section>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <script src="https://cdn.zingchart.com/zingchart.min.js">
+            </script>
+            <script>
+            zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+            ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "ee6b7db5b51705a13dc2339db3edaf6d"];
+            </script>
+            <script src="https://cdn.zingchart.com/modules/zingchart-zoom-buttons.min.js">
+            </script>
+            <style>
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            input {
+                font-family: 'Lucida Sans Unicode';
+            }
+
+            #myChart {
+                height: 100%;
+                width: 100%;
+                min-height: 150px;
+            }
+
+            .zc-ref {
+                display: none;
+            }
+            </style>
+            <div id="myChart">
+            </div>
+            <script>
+            var rownameJS = {{ data.featureName | tojson }}
+            var myChart = {
+                "type": "bar",
+                "title": {
+                    "text": "Missing Rate of Different Feature"
+                },
+                "plot": {
+                    "value-box": {
+                        "text": "%v"
+                    },
+                    "tooltip": {
+                        "rules": [{ //Rule 1
+                            "rule": "%v < "+String({{data.threshold}}),
+                            "text": "%data-sub-text is<br>less than " +String({{data.threshold}}),
+                            "background-color": "#666699"
+                        }, { //Rule 2
+                            "rule": "%v >= "+String({{data.threshold}}),
+                            "text": "%data-sub-text is<br>in the red.",
+                            "font-weight": "bold",
+                            "background-color": "#ff9999"
+                        }],
+                    },
+                },
+                "legend": {
+                    "toggle-action": "hide",
+                    "header": {
+                        "text": "Legend Header"
+                    },
+                    "item": {
+                        "cursor": "pointer"
+                    },
+                    "draggable": true,
+                    "drag-handler": "icon"
+                },
+                "scale-x": {
+                    "values": rownameJS,
+                    "items-overlap": true,
+                    "label": {
+                        "text": "Feature Name",
+                        "font-family": "Arial",
+                        "font-weight": "normal",
+                        "font-size": "10px",
+                        "font-color": "#fff",
+                        "padding-top": "30px"
+                    },
+                    "guide": {
+                        "visible": false
+                    },
+                    "item": {
+                        "font-color": "#9a9cab",
+                        "font-family": "Arial",
+                        "font-size": "10px",
+                        "font-angle": -48,
+                        "offset-x": "5px"
+                    }
+                },
+                "scale-y": {
+                    "line-color": "#53566f",
+                    "tick": {
+                        "line-color": "#53566f"
+                    },
+                    "label": {
+                        "text": "Missing Rate / %",
+                        "font-family": "Arial",
+                        "font-weight": "normal",
+                        "font-size": "10px",
+                        "font-color": "#000"
+                    },
+                    "item": {
+                        "font-color": "#9a9cab",
+                        "font-family": "Arial",
+                        "font-size": "10px",
+                        "padding": "3px"
+                    },
+                    "guide": {
+                        "visible": false
+                    },
+                    "markers": [{
+                        "type": "area",
+                        "range": [0, {{data.threshold}}],
+                        "background-color": "#666699",
+                        "alpha": 0.3
+                    }, {
+                        "type": "area",
+                        "range": [{{data.threshold}}, 100],
+                        "background-color": "#e6000e #ffdfe5",
+                        "alpha": 0.3
+                    }]
+                },
+                "series": [{
+                    "values": {{ data.missingRate }},
+                    "text": "Missing Value",
+                    "data-sub-text": rownameJS,
+                    "backgroundColor":"#6666FF #FF0066"
+                }]
+            };
+            zingchart.render({
+                id: "myChart",
+                data: myChart,
+                height: "480",
+                width: "100%"
+            });
+            </script>
+            <hr/>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <style>
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            input {
+                font-family: 'Lucida Sans Unicode';
+            }
+
+            #missingCount {
+                height: 100%;
+                width: 100%;
+                min-height: 150px;
+            }
+
+            .zc-ref {
+                display: none;
+            }
+            </style>
+            <div id="missingCount">
+            </div>
+            <script>
+            var dateNameJS = {{ data.missingDateName | tojson }}
+            var myConfig = {
+                "globals": {
+                    "font-family": "Lato",
+                    "font-weight": "100"
+                },
+                "graphset": [{
+                    "type": "ring",
+                    "height":"40%", 
+                    "width":"40%", 
+                    "x":"5%",
+                    "y":"30%",
+                    "background-color": "#fff",
+                    "tooltip": {
+                        "visible": 0
+                    },
+                    "plotarea": {
+                        "margin": "0% 0% 0% 0%"
+                    },
+                    "plot": {
+                        "slice": "90%",
+                        "size":150,
+                        "ref-angle": 0,
+                        "detach": false,
+                        "hover-state": {
+                            "visible": false
+                        },
+                        "value-box": {
+                            "visible": true,
+                            "type": "first",
+                            "connected": false,
+                            "placement": "center",
+                            "text": "<span style='font-size:60px;'>Missing</span><br>Count<br>"+String({{data.missingCount}})+"/"+String({{data.allCount}}),
+                            "rules": [{
+                                "rule": "%v > 0",
+                                "visible": true
+                            }],
+                            "font-color": "#000",
+                            "font-size": "40px"
+                        },
+                        "animation": {
+                            "delay": 0,
+                            "effect": 2,
+                            "speed": "600",
+                            "method": "0",
+                            "sequence": "1"
+                        }
+                    },
+                    "series": [{
+                            "values": [{{ data.missingCount }}],
+                            "background-color": "#6666FF #FF0066",
+                            "border-color": "#fff",
+                            "border-width": "2px",
+                            "shadow": 0,
+
+                        },
+                        {
+                            "values": [{{ data.allCount }}],
+                            "background-color": "#000",
+                            "border-color": "#fff",
+                            "border-width": "2px",
+                            "shadow": 0
+                        },
+                    ]
+                },
+
+                {
+                "type": "bar",
+                "height":"90%", 
+                "width":"60%",
+                 "x":"40%",
+                 "y":"5%",
+                "title": {
+                    "text": "Missing Feature Count in the Time Line"
+                },
+                "plot": {
+                    "value-box": {
+                        "text": "%v"
+                    },
+                    "tooltip": {
+                        "rules": [{ //Rule
+                            "rule": "%v",
+                            "text": "%data-sub-text",
+                            "background-color": "#666699"
+                          }
+                        ],
+                    },
+                },
+                "legend": {
+                    "toggle-action": "hide",
+                    "header": {
+                        "text": "Legend Header"
+                    },
+                    "item": {
+                        "cursor": "pointer"
+                    },
+                    "draggable": true,
+                    "drag-handler": "icon"
+                },
+                "scale-x": {
+                    "values": dateNameJS,
+                    "items-overlap": true,
+                    "label": {
+                        "text": "Time",
+                        "font-family": "Arial",
+                        "font-weight": "normal",
+                        "font-size": "10px",
+                        "font-color": "#fff",
+                        "padding-top": "30px"
+                    },
+                    "guide": {
+                        "visible": false
+                    },
+                    "item": {
+                        "font-color": "#9a9cab",
+                        "font-family": "Arial",
+                        "font-size": "10px",
+                        "font-angle": -48,
+                        "offset-x": "5px"
+                    }
+                },
+                "scale-y": {
+                    "line-color": "#53566f",
+                    "tick": {
+                        "line-color": "#53566f"
+                    },
+                    "label": {
+                        "text": "Missing Count",
+                        "font-family": "Arial",
+                        "font-weight": "normal",
+                        "font-size": "10px",
+                        "font-color": "#000"
+                    },
+                    "item": {
+                        "font-color": "#9a9cab",
+                        "font-family": "Arial",
+                        "font-size": "10px",
+                        "padding": "3px"
+                    },
+                    "guide": {
+                        "visible": false
+                    }
+                },
+                "series": [{
+                    "values": {{ data.missingDateCount }},
+                    "text": "Missing Value",
+                    "data-sub-text": dateNameJS,
+                    "backgroundColor":"#6666FF #FF0066"
+                }]
+            }
+            ]};
+            zingchart.render({
+                id: 'missingCount',
+                data: myConfig,
+                hideprogresslogo: true
+            });
+            </script>
+        </div>
+    </div>
+</section>
+{%endif%}
+{%endif%}
+
+<hr/> {% endblock %}

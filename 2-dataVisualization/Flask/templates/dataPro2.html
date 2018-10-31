@@ -1,0 +1,257 @@
+{% extends "layout2.html" %}
+	    {% block body %}
+<!-- Start service Area -->
+			<section class="service-area section-gap" id="dataProcessing">
+				<div class="container">
+					<div class="row d-flex justify-content-center">
+						<div class="menu-content pb-60 col-lg-8">
+							<div class="title text-center">
+								<br>
+								{% if name %}
+								<h1 class="mb-10">{{name}} Data Visualization</h1>
+								{% else %}
+								<h1 class="mb-10">Please Upload Data</h1>
+								{%endif%}
+							</div>
+						</div>
+					</div>
+					<!-- Upload the file and Submit-->
+					<div class="row d-flex justify-content-center">		
+					<form action = "uploader" method = "POST" enctype = "multipart/form-data">
+			         <input type = "file" name = "file"/>
+			         <input type = "submit" value="Submit"/>
+		      		</form>	
+		      		</div>		
+				</div>	
+			</section>
+
+			{% if data %}
+			<section>
+					<div class="container">
+					<div class="row d-flex justify-content-center">
+					<style> /* set the CSS */
+					    body { font: 12px Arial;}
+					    path {
+					      stroke-width: 2;
+					      fill: none;
+					    }
+					    .axis path, .axis line {
+					      fill: none;
+					      stroke: grey;
+					      stroke-width: 1;
+					      shape-rendering: crispEdges;
+					    }
+					    .area {
+					      fill: #F0F8FF;
+					      stroke-width: 0;
+					    }
+					  </style>
+
+<div id='graphDiv'></div>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+    var graphData = {{ data.chart_data | safe }};
+    // Set the dimensions of the svg
+    var margin = {top: 30, right: 50, bottom: 30, left: 50};
+    var svgWidth = 600;
+    var svgHeight = 270;
+    console.log(graphData)
+    var graphWidth = svgWidth - margin.left - margin.right;
+    var graphHeight = svgHeight - margin.top - margin.bottom;
+    // Parse the date / time
+    var parseDate = d3.time.format("%Y-%m-%d").parse;
+    // Set the ranges
+    var x = d3.time.scale().range([0, graphWidth]);
+    var y = d3.scale.linear().range([graphHeight, 0]);
+    // Define the axes
+    var xAxis = d3.svg.axis().scale(x)
+        .orient("bottom").ticks(5);
+    var yAxis = d3.svg.axis().scale(y)
+        .orient("left").ticks(5);
+    // Define the High line
+    var highLine = d3.svg.line()
+        .x(function(d) { return x(d.Date); })
+        .y(function(d) { return y(d.High); });
+    var closeLine = d3.svg.line()
+        .x(function(d) { return x(d.Date); })
+        .y(function(d) { return y(d.Close); });
+    var lowLine = d3.svg.line()
+        .x(function(d) { return x(d.Date); })
+        .y(function(d) { return y(d.Low); });
+    var area = d3.svg.area()
+      .x(function(d) { return x(d.Date); })
+      .y0(function(d) { return y(d.Low); })
+      .y1(function(d) { return y(d.High); })
+    // Adds the svg canvas
+    var svg = d3.select("#graphDiv")
+      .append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight)
+      .append("g")
+        .attr("transform", 
+        "translate(" + margin.left + "," + margin.top + ")")
+    // define function
+    function draw(data) {
+      data.forEach(function(d) {
+        d.Date = parseDate(d.Date);
+        d.High = +d.High;
+        d.Close = +d.Close;
+        d.Low = +d.Low;
+      });
+      // Scale the range of the data
+      x.domain(d3.extent(data, function(d) { return d.Date; }));
+      y.domain([d3.min(data, function(d) {
+          return Math.min(d.High, d.Close, d.Low) }),
+          d3.max(data, function(d) {
+          return Math.max(d.High, d.Close, d.Low) })]);
+      // Add the area path.
+      svg.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", area)
+      // Add the 2 valueline paths.
+      svg.append("path")
+        .style("stroke", "green")
+        .style("fill", "none")
+        .attr("class", "line")
+        .attr("d", highLine(data));
+      svg.append("path")
+        .style("stroke", "blue")
+        .style("fill", "none")
+        .style("stroke-dasharray", ("3, 3"))
+        .attr("d", closeLine(data));
+      svg.append("path")
+        .style("stroke", "red")
+        .attr("d", lowLine(data));
+      // Add the X Axis
+      svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + graphHeight + ")")
+          .call(xAxis);
+      // Add the Y Axis
+      svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+      svg.append("text")
+        .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[0].High)+")")
+        .attr("dy", ".35em")
+        .attr("text-anchor", "start")
+        .style("fill", "green")
+        .text("High");
+      svg.append("text")
+        .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[0].Low)+")")
+        .attr("dy", ".35em")
+        .attr("text-anchor", "start")
+        .style("fill", "red")
+        .text("Low");
+      svg.append("text")
+        .attr("transform", "translate("+(graphWidth+3)+","+y(graphData[0].Close)+")")
+        .attr("dy", ".35em")
+        .attr("text-anchor", "start")
+        .style("fill", "blue")
+        .text("Close");
+    };
+draw(graphData);
+</script>
+</div>
+</div>
+</section>
+{%endif%}
+
+
+{%if ZingData %}
+<section>
+<div class="container">
+	<div class="row d-flex justify-content-center">
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+  <script>
+    zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+    ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "ee6b7db5b51705a13dc2339db3edaf6d"];
+  </script>
+  <script src="https://cdn.zingchart.com/modules/zingchart-zoom-buttons.min.js"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    input {
+      font-family: 'Lucida Sans Unicode';
+    }
+    
+    #myChart {
+      height: 100%;
+      width: 100%;
+      min-height: 150px;
+    }
+    
+    .zc-ref {
+      display: none;
+    }
+  </style>
+  <div id="myChart"></div>
+  <script>
+    var myConfig = {
+      "globals": {
+        "font-family": "Lucida Sans Unicode"
+      },
+      "type": "area",
+      "plotarea": {
+        "margin": "50 40 40 80"
+      },
+      "preview": {
+        "border-width": 1,
+        "handle": {
+          "line-width": 0,
+          "height": 20
+        },
+        "adjust-layout": true
+      },
+      "scroll-x": {},
+      "scale-x": {
+        "transform": {
+          "type": "date"
+        },
+        "item": {
+          "font-size": 10
+        },
+        "zooming": true
+      },
+      "scale-y": {
+        "autoFit": true,
+        "min-value": "auto",
+        "short": true,
+        "label": {
+          "text": "VOLUMES"
+        },
+        "item": {
+          "fontSize": 10
+        },
+        "guide": {
+          "lineStyle": "solid"
+        }
+      },
+      "series": [{
+        "values": {{ZingData}}
+      }],
+    };
+
+    zingchart.render({
+      id: 'myChart',
+      data: myConfig,
+      height: 400,
+      width: '100%',
+      modules: 'zoom-buttons'
+    });
+  </script>
+</div>
+</div>
+</section>
+{%endif%}
+
+
+
+	    {% endblock %}
